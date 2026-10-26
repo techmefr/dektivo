@@ -1,6 +1,16 @@
 import { canAct, getPieceOptions, listLegalActions } from '../actions'
 import { resolveKick } from '../ball'
-import { attackFacing, cellKey, centerCell, goalRows, isSameCell, manhattanDistance, rotationToward } from '../board'
+import {
+  attackFacing,
+  attackStepX,
+  cellKey,
+  centerCell,
+  directionVectors,
+  goalRows,
+  isSameCell,
+  manhattanDistance,
+  rotationToward,
+} from '../board'
 import type { Cell, Direction, GameAction, KickKind, Piece, RandomSource, Team } from '../types'
 import type { PlayerView } from '../visibility'
 
@@ -11,23 +21,23 @@ type AiProfile = {
   minimumShotChance: number
   keepsGoalkeeper: boolean
   avoidsBlockedCells: boolean
-  passesForward: boolean
+  minimumForwardPassChance: number
 }
 
 const profiles: Record<AiLevel, AiProfile> = {
   easy: {
-    randomActionChance: 0.25,
+    randomActionChance: 0.2,
     minimumShotChance: 0.01,
     keepsGoalkeeper: false,
     avoidsBlockedCells: false,
-    passesForward: false,
+    minimumForwardPassChance: 0.5,
   },
   medium: {
     randomActionChance: 0.05,
     minimumShotChance: 0.33,
     keepsGoalkeeper: true,
     avoidsBlockedCells: true,
-    passesForward: true,
+    minimumForwardPassChance: 0.33,
   },
 }
 
@@ -81,7 +91,7 @@ const bestShot = (view: PlayerView, carrier: Piece): { direction: Direction; cha
   )
 }
 
-const bestForwardPass = (view: PlayerView, carrier: Piece): Direction | null => {
+const bestForwardPass = (view: PlayerView, carrier: Piece, minimumChance: number): Direction | null => {
   const passes = getPieceOptions(view, carrier.id).passDirections.map((direction) => ({
     direction,
     chance: kickSuccessChance(view, carrier, 'pass', direction, (outcome) =>
@@ -95,8 +105,28 @@ const bestForwardPass = (view: PlayerView, carrier: Piece): Direction | null => 
     (current, pass) => (current === null || pass.chance > current.chance ? pass : current),
     null,
   )
-  return best && best.chance >= 0.5 ? best.direction : null
+  return best && best.chance >= minimumChance ? best.direction : null
 }
+
+const clearanceKick = (view: PlayerView, carrier: Piece): GameAction | null => {
+  const options = getPieceOptions(view, carrier.id)
+  const direction = [...options.passDirections].sort(
+    (first, second) => directionVectors[second].dx * attackStepX(view.team) - directionVectors[first].dx * attackStepX(view.team),
+  )[0]
+  return direction ? { kind: 'pass', pieceId: carrier.id, direction } : null
+}
+
+const blockedCellsOf = (view: PlayerView, pieceId: string): Set<string> =>
+  new Set(
+    view.events
+      .filter((event) => view.turnNumber - event.turnNumber <= recentTurnWindow)
+      .flatMap((event) =>
+        event.payload.type === 'blocked' && event.payload.pieceId === pieceId ? [cellKey(event.payload.at)] : [],
+      ),
+  )
+
+const moveDistance = (first: Cell, second: Cell): number =>
+  Math.max(Math.abs(first.x - second.x), Math.abs(first.y - second.y))
 
 const stepToward = (
   view: PlayerView,
@@ -105,15 +135,16 @@ const stepToward = (
   avoidedCells: Set<string>,
   random: RandomSource,
 ): GameAction | null => {
-  const currentDistance = manhattanDistance(piece.cell, target)
+  const distanceTo = (cell: Cell) => moveDistance(cell, target) * 10 + manhattanDistance(cell, target)
+  const currentDistance = distanceTo(piece.cell)
   const candidates = getPieceOptions(view, piece.id).moveTargets.filter(
     (cell) => isSameCell(cell, target) || !avoidedCells.has(cellKey(cell)),
   )
-  const closestDistance = Math.min(...candidates.map((cell) => manhattanDistance(cell, target)))
+  const closestDistance = Math.min(...candidates.map(distanceTo))
   if (!Number.isFinite(closestDistance) || closestDistance >= currentDistance) {
     return null
   }
-  const closest = candidates.filter((cell) => manhattanDistance(cell, target) === closestDistance)
+  const closest = candidates.filter((cell) => distanceTo(cell) === closestDistance)
   const destination = pickRandom(closest, random)
   return destination ? { kind: 'move', pieceId: piece.id, to: destination } : null
 }
@@ -138,13 +169,14 @@ const planWithBall = (view: PlayerView, profile: AiProfile, avoidedCells: Set<st
   if (rotation && goalDistance <= maxShotDistance) {
     return { kind: 'rotate', pieceId: carrier.id, side: rotation }
   }
-  if (profile.passesForward) {
-    const passDirection = bestForwardPass(view, carrier)
-    if (passDirection) {
-      return { kind: 'pass', pieceId: carrier.id, direction: passDirection }
-    }
+  const passDirection = bestForwardPass(view, carrier, profile.minimumForwardPassChance)
+  if (passDirection) {
+    return { kind: 'pass', pieceId: carrier.id, direction: passDirection }
   }
-  return stepToward(view, carrier, opponentGoalCell(view), avoidedCells, random)
+  const carrierAvoidedCells = new Set([...avoidedCells, ...blockedCellsOf(view, carrier.id)])
+  return (
+    stepToward(view, carrier, opponentGoalCell(view), carrierAvoidedCells, random) ?? clearanceKick(view, carrier)
+  )
 }
 
 const planWithoutBall = (view: PlayerView, profile: AiProfile, avoidedCells: Set<string>, random: RandomSource): GameAction | null => {
