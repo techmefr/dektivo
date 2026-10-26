@@ -60,10 +60,19 @@ export const isInOwnHalf = (rules: Rules, team: Team, cell: Cell): boolean => {
   return team === 'teal' ? cell.x < midline : cell.x > rules.boardLength - 1 - midline
 }
 
-export const orthogonalNeighbors = (rules: Rules, cell: Cell): Cell[] =>
-  facingOrder
-    .map((facing) => shiftCell(cell, directionVectors[facing]))
-    .filter((neighbor) => isInsideBoard(rules, neighbor))
+export const moveDirectionsFor = (rules: Rules): readonly Direction[] =>
+  rules.moveDirections === 'all' ? allDirections : facingOrder
+
+export const stepVectorBetween = (from: Cell, to: Cell): { vector: Vector; steps: number } | null => {
+  const dx = to.x - from.x
+  const dy = to.y - from.y
+  const steps = Math.max(Math.abs(dx), Math.abs(dy))
+  const isStraightLine = dx === 0 || dy === 0 || Math.abs(dx) === Math.abs(dy)
+  if (steps === 0 || !isStraightLine) {
+    return null
+  }
+  return { vector: { dx: Math.sign(dx), dy: Math.sign(dy) }, steps }
+}
 
 export const rotateFacing = (facing: Facing, side: RotationSide): Facing => {
   const step = side === 'right' ? 1 : facingOrder.length - 1

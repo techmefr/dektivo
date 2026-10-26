@@ -37,7 +37,7 @@ These are first-version hypotheses, all adjustable in `shared/game/rules.ts`.
 - **Pitch**: 9 columns long by 7 rows wide, shown in landscape. Goals are 3 cells wide, centred on each end line. Teal defends the left goal, orange the right one.
 - **Teams**: one square, one triangle and one diamond each, placed secretly in your own half (the midline column stays empty). The ball starts in the centre.
 - **Turn**: 1 or 2 actions (2 by default). The turn ends when actions run out, when the timer of the current action expires, or on "End turn".
-- **Move**: one cell orthogonally. Stepping on a loose ball picks it up; the carrier takes the ball along. Moving into a hidden opponent fails, costs the action and is reported to the mover only. Moving into the ball carrier steals the ball (tackle).
+- **Move**: one or two cells in a straight line, in any of the eight directions, never through a teammate. Crossing a loose ball picks it up; the carrier takes the ball along. Meeting a hidden opponent stops the piece just before it, costs the action and is reported to the mover only. Running into or through the ball carrier steals the ball (tackle) and stops the piece just before it.
 - **Rotate**: a quarter turn left or right.
 - **Pass and shoot**: only the carrier, only toward the three directions of its facing cone. A shot must also head toward the opponent goal. The die (1, 1, 2, 2, 3, 3) gives the pass distance; a shot travels die + 2 cells.
 - **Collisions**, resolved cell by cell: a teammate always controls the ball. An opponent square catches it, an opponent triangle sends it the way it faces, an opponent diamond sends it straight back. Side lines and end lines outside the goal mouth bounce the ball.

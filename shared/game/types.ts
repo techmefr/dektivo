@@ -28,7 +28,11 @@ export type Ball = {
 
 export type DeflectionBehavior = 'catch' | 'deflect' | 'rebound'
 
+export type MoveDirections = 'orthogonal' | 'all'
+
 export type Rules = {
+  moveDirections: MoveDirections
+  maxMoveDistance: number
   boardLength: number
   boardWidth: number
   goalWidth: number

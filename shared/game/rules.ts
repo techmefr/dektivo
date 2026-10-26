@@ -1,6 +1,8 @@
 import type { MatchSettings, Rules } from './types'
 
 export const defaultRules: Rules = {
+  moveDirections: 'all',
+  maxMoveDistance: 2,
   boardLength: 9,
   boardWidth: 7,
   goalWidth: 3,

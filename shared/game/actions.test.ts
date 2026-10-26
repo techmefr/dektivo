@@ -32,10 +32,57 @@ describe('moving', () => {
     expect(next.actionsLeft).toBe(1)
   })
 
-  it('refuses diagonal moves', () => {
+  it('moves one or two cells in any of the eight directions', () => {
+    const triangle = idOf('teal', 'triangle')
+    const diagonal = applyAction(startedMatch(), 'teal', { kind: 'move', pieceId: triangle, to: { x: 3, y: 2 } }, anyFace)
+    const twoCells = applyAction(startedMatch(), 'teal', { kind: 'move', pieceId: triangle, to: { x: 4, y: 3 } }, anyFace)
+
+    expect(diagonal.pieces.find((piece) => piece.id === triangle)?.cell).toEqual({ x: 3, y: 2 })
+    expect(twoCells.pieces.find((piece) => piece.id === triangle)?.cell).toEqual({ x: 4, y: 3 })
+  })
+
+  it('refuses moves longer than two cells or off a straight line', () => {
+    const triangle = idOf('teal', 'triangle')
+
     expect(() =>
-      applyAction(startedMatch(), 'teal', { kind: 'move', pieceId: idOf('teal', 'triangle'), to: { x: 3, y: 2 } }, anyFace),
+      applyAction(startedMatch(), 'teal', { kind: 'move', pieceId: triangle, to: { x: 5, y: 1 } }, anyFace),
     ).toThrowError(new IllegalActionError('illegalMove'))
+    expect(() =>
+      applyAction(startedMatch(), 'teal', { kind: 'move', pieceId: triangle, to: { x: 3, y: 3 } }, anyFace),
+    ).toThrowError(new IllegalActionError('illegalMove'))
+  })
+
+  it('cannot move through a teammate', () => {
+    const match = startedMatch({}, replaceShape(tealPlacement, 'diamond', { x: 3, y: 1 }))
+
+    expect(() =>
+      applyAction(match, 'teal', { kind: 'move', pieceId: idOf('teal', 'triangle'), to: { x: 4, y: 1 } }, anyFace),
+    ).toThrowError(new IllegalActionError('illegalMove'))
+  })
+
+  it('picks up a loose ball on the way and keeps carrying it', () => {
+    const match = startedMatch({}, replaceShape(tealPlacement, 'triangle', { x: 3, y: 3 }))
+    const next = applyAction(match, 'teal', { kind: 'move', pieceId: idOf('teal', 'triangle'), to: { x: 5, y: 3 } }, anyFace)
+
+    expect(next.ball).toEqual({ cell: { x: 5, y: 3 }, holderId: idOf('teal', 'triangle') })
+  })
+
+  it('stops in front of a hidden opponent met halfway', () => {
+    const match = startedMatch({}, replaceShape(tealPlacement, 'triangle', { x: 3, y: 1 }), replaceShape(orangePlacement, 'triangle', { x: 5, y: 1 }))
+    const next = applyAction(match, 'teal', { kind: 'move', pieceId: idOf('teal', 'triangle'), to: { x: 5, y: 1 } }, anyFace)
+
+    expect(next.pieces.find((piece) => piece.id === idOf('teal', 'triangle'))?.cell).toEqual({ x: 4, y: 1 })
+    expect(next.events.at(-1)?.payload).toMatchObject({ type: 'blocked', at: { x: 5, y: 1 } })
+  })
+
+  it('steals the ball when running through the carrier', () => {
+    const match = withBallHeldBy(
+      startedMatch({}, replaceShape(tealPlacement, 'triangle', { x: 3, y: 1 }), replaceShape(orangePlacement, 'triangle', { x: 5, y: 1 })),
+      idOf('orange', 'triangle'),
+    )
+    const next = applyAction(match, 'teal', { kind: 'move', pieceId: idOf('teal', 'triangle'), to: { x: 5, y: 1 } }, anyFace)
+
+    expect(next.ball).toEqual({ cell: { x: 4, y: 1 }, holderId: idOf('teal', 'triangle') })
   })
 
   it('refuses to act out of turn', () => {

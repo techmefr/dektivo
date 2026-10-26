@@ -1,5 +1,16 @@
 import { resolveKick } from './ball'
-import { allDirections, attackStepX, directionVectors, isSameCell, kickCones, orthogonalNeighbors, rotateFacing } from './board'
+import {
+  allDirections,
+  attackStepX,
+  directionVectors,
+  isInsideBoard,
+  isSameCell,
+  kickCones,
+  moveDirectionsFor,
+  rotateFacing,
+  shiftCell,
+  stepVectorBetween,
+} from './board'
 import { rollDie } from './dice'
 import { IllegalActionError } from './errors'
 import { cloneState, recordEvent } from './events'
@@ -25,9 +36,19 @@ export const getPieceOptions = (view: PlayerView, pieceId: string): PieceOptions
   if (!piece || !canAct(view)) {
     return noOptions
   }
-  const moveTargets = orthogonalNeighbors(view.rules, piece.cell).filter(
-    (target) => !view.ownPieces.some((ownPiece) => isSameCell(ownPiece.cell, target)),
-  )
+  const moveTargets = moveDirectionsFor(view.rules).flatMap((direction) => {
+    const targets: Cell[] = []
+    let cursor = piece.cell
+    for (let distance = 1; distance <= view.rules.maxMoveDistance; distance += 1) {
+      cursor = shiftCell(cursor, directionVectors[direction])
+      const isOwnPieceInTheWay = view.ownPieces.some((ownPiece) => isSameCell(ownPiece.cell, cursor))
+      if (!isInsideBoard(view.rules, cursor) || isOwnPieceInTheWay) {
+        break
+      }
+      targets.push(cursor)
+    }
+    return targets
+  })
   const isHoldingBall = view.ball.holderId === piece.id
   const kickDirections = isHoldingBall ? (view.rules.kickConeOnly ? [...kickCones[piece.facing]] : [...allDirections]) : []
   const shootDirections = view.rules.shootTowardGoalOnly
@@ -70,31 +91,51 @@ const findPiece = (draft: MatchState, pieceId: string): Piece => {
 
 const applyMove = (draft: MatchState, action: MoveAction): void => {
   const mover = findPiece(draft, action.pieceId)
-  const occupant = draft.pieces.find((piece) => isSameCell(piece.cell, action.to))
+  const line = stepVectorBetween(mover.cell, action.to)
+  if (!line) {
+    throw new IllegalActionError('illegalMove')
+  }
+  const from = { ...mover.cell }
+  let ballCarriedFrom: Cell | null = draft.ball.holderId === mover.id ? { ...mover.cell } : null
+  let pickedUpAt: Cell | null = null
 
-  if (occupant) {
-    if (draft.rules.tackleEnabled && draft.ball.holderId === occupant.id) {
-      draft.ball = { cell: { ...mover.cell }, holderId: mover.id }
-      recordEvent(draft, 'all', { type: 'tackled', team: mover.team, at: { ...action.to } })
+  const recordTravel = () => {
+    if (isSameCell(from, mover.cell)) {
       return
     }
-    recordEvent(draft, mover.team, { type: 'blocked', pieceId: mover.id, at: { ...action.to } })
-    return
+    recordEvent(draft, mover.team, { type: 'moved', pieceId: mover.id, from, to: { ...mover.cell } })
+    if (pickedUpAt) {
+      recordEvent(draft, 'all', { type: 'ballPickedUp', team: mover.team, at: pickedUpAt })
+    }
+    if (ballCarriedFrom && !isSameCell(ballCarriedFrom, mover.cell)) {
+      recordEvent(draft, 'all', { type: 'ballCarried', team: mover.team, from: ballCarriedFrom, to: { ...mover.cell } })
+    }
   }
 
-  const from = { ...mover.cell }
-  mover.cell = { ...action.to }
-  recordEvent(draft, mover.team, { type: 'moved', pieceId: mover.id, from, to: { ...action.to } })
-
-  if (draft.ball.holderId === mover.id) {
-    draft.ball.cell = { ...action.to }
-    recordEvent(draft, 'all', { type: 'ballCarried', team: mover.team, from, to: { ...action.to } })
-    return
+  for (let step = 0; step < line.steps; step += 1) {
+    const next = shiftCell(mover.cell, line.vector)
+    const occupant = draft.pieces.find((piece) => isSameCell(piece.cell, next))
+    if (occupant) {
+      recordTravel()
+      if (draft.rules.tackleEnabled && draft.ball.holderId === occupant.id) {
+        draft.ball = { cell: { ...mover.cell }, holderId: mover.id }
+        recordEvent(draft, 'all', { type: 'tackled', team: mover.team, at: next })
+        return
+      }
+      recordEvent(draft, mover.team, { type: 'blocked', pieceId: mover.id, at: next })
+      return
+    }
+    mover.cell = next
+    if (draft.ball.holderId === mover.id) {
+      draft.ball.cell = { ...next }
+    }
+    if (draft.ball.holderId === null && isSameCell(draft.ball.cell, next)) {
+      draft.ball.holderId = mover.id
+      ballCarriedFrom = { ...next }
+      pickedUpAt = { ...next }
+    }
   }
-  if (draft.ball.holderId === null && isSameCell(draft.ball.cell, action.to)) {
-    draft.ball.holderId = mover.id
-    recordEvent(draft, 'all', { type: 'ballPickedUp', team: mover.team, at: { ...action.to } })
-  }
+  recordTravel()
 }
 
 const applyKick = (draft: MatchState, action: KickAction, random: RandomSource): boolean => {
