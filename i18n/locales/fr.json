@@ -1,0 +1,147 @@
+{
+  "app": {
+    "name": "Dektivo",
+    "tagline": "Football tactique à information cachée"
+  },
+  "home": {
+    "playAi": "Jouer contre l'IA",
+    "playOnline": "Jouer en ligne",
+    "comingSoon": "Bientôt",
+    "settings": "Paramètres",
+    "resume": "Reprendre la partie"
+  },
+  "settings": {
+    "title": "Paramètres",
+    "language": "Langue",
+    "reducedMotion": "Réduire les animations",
+    "back": "Retour"
+  },
+  "setup": {
+    "title": "Nouvelle partie",
+    "actionsPerTurn": "Actions par tour",
+    "actionsCount": "{count} action | {count} actions",
+    "timer": "Chrono par action",
+    "seconds": "{count} s",
+    "noTimer": "Sans chrono",
+    "aiLevel": "Niveau de l'IA",
+    "levels": {
+      "easy": "Facile",
+      "medium": "Moyen"
+    },
+    "yourColor": "Votre couleur",
+    "yourTeamName": "Nom de votre équipe",
+    "opponentTeamName": "Nom de l'équipe adverse",
+    "goalsToWin": "Buts pour gagner",
+    "start": "Placer mes pièces",
+    "back": "Retour"
+  },
+  "teams": {
+    "teal": "Turquoise",
+    "orange": "Orange"
+  },
+  "shapes": {
+    "square": "Carré",
+    "triangle": "Triangle",
+    "diamond": "Losange",
+    "unknown": "Inconnu"
+  },
+  "directions": {
+    "N": "vers le haut",
+    "NE": "vers le haut à droite",
+    "E": "vers la droite",
+    "SE": "vers le bas à droite",
+    "S": "vers le bas",
+    "SW": "vers le bas à gauche",
+    "W": "vers la gauche",
+    "NW": "vers le haut à gauche"
+  },
+  "placement": {
+    "title": "Placez vos pièces",
+    "hint": "Touchez une pièce puis une case de votre moitié de terrain. Les flèches tournent la pièce choisie.",
+    "selected": "Pièce choisie : {shape}",
+    "nothingSelected": "Aucune pièce choisie",
+    "shuffle": "Autre formation",
+    "confirm": "Valider le placement",
+    "waitingOpponent": "L'adversaire se place…"
+  },
+  "actions": {
+    "move": "Déplacer",
+    "rotateLeft": "Tourner à gauche",
+    "rotateRight": "Tourner à droite",
+    "pass": "Passer",
+    "shoot": "Tirer",
+    "cancel": "Annuler",
+    "moveTo": "Déplacer en {cell}",
+    "kickToward": "{kick} {direction}"
+  },
+  "markers": {
+    "menuLabel": "Marqueur de déduction en {cell}",
+    "remove": "Effacer",
+    "rotate": "Orienter",
+    "describe": "Marqueur {kind} en {cell}"
+  },
+  "board": {
+    "label": "Terrain de {length} colonnes sur {width} lignes",
+    "ownPiece": "Votre {shape}, orienté {facing}",
+    "ownPieceWithBall": "Votre {shape}, orienté {facing}, avec le ballon",
+    "ballFree": "Ballon libre en {cell}",
+    "ballOpponent": "Ballon tenu par l'adversaire en {cell}"
+  },
+  "hud": {
+    "yourTurn": "Votre tour",
+    "opponentThinking": "L'adversaire réfléchit…",
+    "actionsLeft": "Actions restantes",
+    "endTurn": "Fin du tour",
+    "pause": "Pause",
+    "resume": "Reprendre",
+    "paused": "Partie en pause",
+    "quit": "Quitter",
+    "log": "Journal",
+    "closeLog": "Fermer le journal",
+    "timeLeft": "Temps restant : {seconds} secondes",
+    "noTimer": "Sans chrono",
+    "turn": "Tour {number}",
+    "chooseMove": "Choisissez une case",
+    "chooseDirection": "Choisissez une direction"
+  },
+  "die": {
+    "result": "Résultat du dé : {value}"
+  },
+  "match": {
+    "goal": "But !",
+    "rotateDevice": "Tournez votre téléphone en paysage pour plus de confort."
+  },
+  "log": {
+    "title": "Journal du match",
+    "empty": "Aucun événement pour l'instant.",
+    "placed": "{team} a placé ses pièces",
+    "moved": "Votre {shape} va en {cell}",
+    "rotated": "Votre {shape} pivote",
+    "blocked": "Votre {shape} est bloqué en {cell} : une pièce cachée s'y trouve",
+    "ballPickedUp": "{team} récupère le ballon en {cell}",
+    "ballCarried": "{team} avance avec le ballon en {cell}",
+    "tackled": "{team} vole le ballon en {cell}",
+    "dieRolled": "{team} lance le dé : {value}",
+    "pass": "{team} passe sur {distance} cases",
+    "shoot": "{team} tire sur {distance} cases",
+    "deflect": "Le ballon est dévié en {cell}",
+    "rebound": "Le ballon rebondit en {cell}",
+    "edgeBounce": "Le ballon rebondit sur la ligne",
+    "caught": "{team} contrôle le ballon en {cell}",
+    "intercepted": "{team} intercepte le ballon en {cell}",
+    "stopped": "Le ballon s'arrête en {cell}",
+    "goal": "But pour {team} !",
+    "turnEnded": "Fin du tour de {team}",
+    "timeout": "Temps écoulé pour {team}",
+    "matchEnded": "Fin du match"
+  },
+  "end": {
+    "victory": "Victoire !",
+    "defeat": "Défaite",
+    "draw": "Match nul",
+    "duration": "Durée",
+    "turns": "Tours joués",
+    "replay": "Rejouer",
+    "home": "Accueil"
+  }
+}
