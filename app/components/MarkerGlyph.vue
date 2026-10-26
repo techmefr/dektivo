@@ -25,6 +25,10 @@ const unknownOrigin = computed(() => ({
 </template>
 
 <style scoped>
+.marker-unknown {
+  pointer-events: none;
+}
+
 .marker-unknown rect {
   fill-opacity: 0.6;
   stroke-width: 0.5;

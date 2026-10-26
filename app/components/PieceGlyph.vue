@@ -46,6 +46,7 @@ const placement = computed(() => {
 <style scoped>
 .piece {
   transition: transform 0.25s ease;
+  pointer-events: none;
 }
 
 .piece__body {
