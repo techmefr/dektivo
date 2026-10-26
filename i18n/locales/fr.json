@@ -121,6 +121,8 @@
     "ballPickedUp": "{team} récupère le ballon en {cell}",
     "ballCarried": "{team} avance avec le ballon en {cell}",
     "tackled": "{team} vole le ballon en {cell}",
+    "tackleFailed": "{team} rate son tacle en {cell}",
+    "tackleRefused": "Le ballon en {cell} est protégé : {team} ne peut pas le voler ce tour-ci",
     "dieRolled": "{team} lance le dé : {value}",
     "pass": "{team} passe sur {distance} cases",
     "shoot": "{team} tire sur {distance} cases",
@@ -142,6 +144,7 @@
     "duration": "Durée",
     "turns": "Tours joués",
     "replay": "Rejouer",
-    "home": "Accueil"
+    "home": "Accueil",
+    "downloadRecord": "Télécharger le journal complet"
   }
 }

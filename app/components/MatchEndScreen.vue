@@ -49,6 +49,7 @@ onMounted(() => replayButton.value?.focus())
       <div class="end__actions">
         <button ref="replayButton" type="button" class="arcade-button" @click="emit('replay')">{{ t('end.replay') }}</button>
         <button type="button" class="arcade-button arcade-button--ghost" @click="emit('home')">{{ t('end.home') }}</button>
+        <button type="button" class="arcade-button arcade-button--ghost" @click="store.downloadRecord()">{{ t('end.downloadRecord') }}</button>
       </div>
     </section>
   </div>

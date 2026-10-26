@@ -2,17 +2,6 @@ import { defaultRules, defaultSettings } from './rules'
 import { createMatch, pieceIdFor, placeTeam } from './state'
 import type { MatchSettings, MatchState, PiecePlacement, RandomSource, Rules } from './types'
 
-export const seededRandom = (seed: number): RandomSource => {
-  let current = seed >>> 0
-  return () => {
-    current = (current + 0x6d2b79f5) >>> 0
-    let mixed = current
-    mixed = Math.imul(mixed ^ (mixed >>> 15), mixed | 1)
-    mixed ^= mixed + Math.imul(mixed ^ (mixed >>> 7), mixed | 61)
-    return ((mixed ^ (mixed >>> 14)) >>> 0) / 4294967296
-  }
-}
-
 export const fixedRandom = (value: number): RandomSource => () => value
 
 export const randomForFace = (rules: Rules, face: number): RandomSource => {
@@ -51,3 +40,5 @@ export const withBallHeldBy = (state: MatchState, pieceId: string): MatchState =
 }
 
 export const idOf = pieceIdFor
+
+export { seededRandom } from './dice'

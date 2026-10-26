@@ -121,6 +121,8 @@
     "ballPickedUp": "{team} picks up the ball on {cell}",
     "ballCarried": "{team} carries the ball to {cell}",
     "tackled": "{team} steals the ball on {cell}",
+    "tackleFailed": "{team} misses the tackle on {cell}",
+    "tackleRefused": "The ball on {cell} is protected: {team} cannot steal it this turn",
     "dieRolled": "{team} rolls the die: {value}",
     "pass": "{team} passes over {distance} cells",
     "shoot": "{team} shoots over {distance} cells",
@@ -142,6 +144,7 @@
     "duration": "Duration",
     "turns": "Turns played",
     "replay": "Play again",
-    "home": "Home"
+    "home": "Home",
+    "downloadRecord": "Download the full log"
   }
 }

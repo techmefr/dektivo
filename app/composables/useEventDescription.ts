@@ -28,6 +28,10 @@ export const useEventDescription = () => {
         return t('log.ballCarried', { team: teamName(payload.team), cell: cellLabel(payload.to) })
       case 'tackled':
         return t('log.tackled', { team: teamName(payload.team), cell: cellLabel(payload.at) })
+      case 'tackleFailed':
+        return t('log.tackleFailed', { team: teamName(payload.team), cell: cellLabel(payload.at) })
+      case 'tackleRefused':
+        return t('log.tackleRefused', { team: teamName(payload.team), cell: cellLabel(payload.at) })
       case 'dieRolled':
         return t('log.dieRolled', { team: teamName(payload.team), value: payload.value })
       case 'ballKicked':

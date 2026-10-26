@@ -13,6 +13,10 @@ const celebratingName = computed(() =>
   store.celebratingTeam ? store.setup?.teamNames[store.celebratingTeam] || t(`teams.${store.celebratingTeam}`) : '',
 )
 
+onMounted(() => {
+  store.resumeAiTurn()
+})
+
 const replay = () => {
   store.restartMatch()
 }

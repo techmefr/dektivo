@@ -13,11 +13,9 @@ import {
   rotateMarker,
 } from '#shared/game'
 import type {
-  AiLevel,
   Cell,
   GameAction,
   MatchEvent,
-  MatchSettings,
   MatchState,
   Marker,
   MarkerKind,
@@ -27,13 +25,7 @@ import type {
   Team,
   TurnEndReason,
 } from '#shared/game'
-
-export type MatchSetup = {
-  settings: MatchSettings
-  aiLevel: AiLevel
-  humanTeam: Team
-  teamNames: Record<Team, string>
-}
+import type { MatchSetup } from '~/utils/saved-match'
 
 const aiThinkingDelayMs = 650
 const dieDisplayMs = 750
@@ -46,9 +38,10 @@ const wait = (milliseconds: number): Promise<void> => new Promise((resolve) => s
 export const useMatchStore = defineStore('match', () => {
   const preferences = usePreferencesStore()
 
-  const setup = shallowRef<MatchSetup | null>(null)
-  const match = shallowRef<MatchState | null>(null)
-  const markers = shallowRef<Marker[]>([])
+  const savedMatch = readSavedMatch()
+  const setup = shallowRef<MatchSetup | null>(savedMatch?.setup ?? null)
+  const match = shallowRef<MatchState | null>(savedMatch?.match ?? null)
+  const markers = shallowRef<Marker[]>(savedMatch?.markers ?? [])
   const ballOverride = shallowRef<Cell | null>(null)
   const dieValue = ref<number | null>(null)
   const dieRollCount = ref(0)
@@ -56,9 +49,9 @@ export const useMatchStore = defineStore('match', () => {
   const isAiThinking = ref(false)
   const isAnimating = ref(false)
   const isPaused = ref(false)
-  const startedAt = ref<number | null>(null)
+  const startedAt = ref<number | null>(savedMatch?.startedAt ?? null)
   const endedAt = ref<number | null>(null)
-  let lastAnimatedEventId = 0
+  let lastAnimatedEventId = savedMatch?.match.events.at(-1)?.id ?? 0
   let sessionNumber = 0
 
   const humanTeam = computed<Team>(() => setup.value?.humanTeam ?? 'teal')
@@ -114,17 +107,20 @@ export const useMatchStore = defineStore('match', () => {
     }
   }
 
-  const replayKick = async (events: MatchEvent[], dieIndex: number, session: number): Promise<void> => {
-    const kickEvent = events.slice(dieIndex).find((event) => event.payload.type === 'ballKicked')
+  const replayRoll = async (events: MatchEvent[], dieIndex: number, session: number): Promise<void> => {
     const dieEvent = events[dieIndex]
-    if (!kickEvent || kickEvent.payload.type !== 'ballKicked' || dieEvent?.payload.type !== 'dieRolled') {
+    if (dieEvent?.payload.type !== 'dieRolled') {
       return
     }
-    ballOverride.value = kickEvent.payload.from
+    const kickEvent = dieEvent.payload.kick === 'tackle' ? undefined : events[dieIndex + 1]
+    const kick = kickEvent?.payload.type === 'ballKicked' ? kickEvent.payload : null
+    if (kick) {
+      ballOverride.value = kick.from
+    }
     dieValue.value = dieEvent.payload.value
     dieRollCount.value += 1
     await wait(scaled(dieDisplayMs))
-    for (const cell of kickEvent.payload.path) {
+    for (const cell of kick?.path ?? []) {
       if (session !== sessionNumber) {
         return
       }
@@ -146,7 +142,7 @@ export const useMatchStore = defineStore('match', () => {
         return
       }
       if (event.payload.type === 'dieRolled') {
-        await replayKick(newEvents, index, session)
+        await replayRoll(newEvents, index, session)
       }
       if (event.payload.type === 'goal') {
         celebratingTeam.value = event.payload.team
@@ -184,6 +180,12 @@ export const useMatchStore = defineStore('match', () => {
     }
     isAiThinking.value = false
     noteMatchEnd()
+  }
+
+  const resumeAiTurn = async (): Promise<void> => {
+    if (match.value?.phase === 'playing' && match.value.activeTeam === aiTeam.value && !isAiThinking.value) {
+      await runAiTurn()
+    }
   }
 
   const commit = async (next: MatchState): Promise<void> => {
@@ -237,6 +239,20 @@ export const useMatchStore = defineStore('match', () => {
     markers.value = rotateMarker(markers.value, cell, side)
   }
 
+  const downloadRecord = (): void => {
+    if (match.value) {
+      downloadMatchRecord({ match: match.value, setup: setup.value, startedAt: startedAt.value, endedAt: endedAt.value })
+    }
+  }
+
+  watch([match, markers], ([currentMatch, currentMarkers]) => {
+    if (!currentMatch || !setup.value || currentMatch.phase === 'finished') {
+      clearSavedMatch()
+      return
+    }
+    writeSavedMatch({ setup: setup.value, match: currentMatch, markers: currentMarkers, startedAt: startedAt.value })
+  })
+
   return {
     setup,
     match,
@@ -261,6 +277,8 @@ export const useMatchStore = defineStore('match', () => {
     confirmPlacement,
     play,
     endHumanTurn,
+    resumeAiTurn,
+    downloadRecord,
     togglePause,
     setMarker,
     clearMarker,

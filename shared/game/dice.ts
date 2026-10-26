@@ -8,3 +8,14 @@ export const rollDie = (faces: readonly number[], random: RandomSource): number 
   }
   return face
 }
+
+export const seededRandom = (seed: number): RandomSource => {
+  let current = seed >>> 0
+  return () => {
+    current = (current + 0x6d2b79f5) >>> 0
+    let mixed = current
+    mixed = Math.imul(mixed ^ (mixed >>> 15), mixed | 1)
+    mixed ^= mixed + Math.imul(mixed ^ (mixed >>> 7), mixed | 61)
+    return ((mixed ^ (mixed >>> 14)) >>> 0) / 4294967296
+  }
+}

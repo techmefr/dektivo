@@ -42,6 +42,9 @@ onBeforeUnmount(() => window.removeEventListener('keydown', closeOnEscape))
           <span>{{ entry.text }}</span>
         </li>
       </ol>
+      <button v-if="store.match?.phase === 'finished'" type="button" class="arcade-button arcade-button--ghost log__download" @click="store.downloadRecord()">
+        {{ t('end.downloadRecord') }}
+      </button>
     </aside>
   </div>
 </template>
@@ -93,6 +96,10 @@ onBeforeUnmount(() => window.removeEventListener('keydown', closeOnEscape))
   padding: 6px 0;
   border-bottom: 1px solid var(--panel-border);
   font-size: 0.9rem;
+}
+
+.log__download {
+  margin-top: 12px;
 }
 
 .log__turn {
