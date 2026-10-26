@@ -1,0 +1,147 @@
+{
+  "app": {
+    "name": "Dektivo",
+    "tagline": "Hidden-information tactical football"
+  },
+  "home": {
+    "playAi": "Play vs AI",
+    "playOnline": "Play online",
+    "comingSoon": "Soon",
+    "settings": "Settings",
+    "resume": "Resume match"
+  },
+  "settings": {
+    "title": "Settings",
+    "language": "Language",
+    "reducedMotion": "Reduce motion",
+    "back": "Back"
+  },
+  "setup": {
+    "title": "New match",
+    "actionsPerTurn": "Actions per turn",
+    "actionsCount": "{count} action | {count} actions",
+    "timer": "Timer per action",
+    "seconds": "{count} s",
+    "noTimer": "No timer",
+    "aiLevel": "AI level",
+    "levels": {
+      "easy": "Easy",
+      "medium": "Medium"
+    },
+    "yourColor": "Your colour",
+    "yourTeamName": "Your team name",
+    "opponentTeamName": "Opponent team name",
+    "goalsToWin": "Goals to win",
+    "start": "Place my pieces",
+    "back": "Back"
+  },
+  "teams": {
+    "teal": "Teal",
+    "orange": "Orange"
+  },
+  "shapes": {
+    "square": "Square",
+    "triangle": "Triangle",
+    "diamond": "Diamond",
+    "unknown": "Unknown"
+  },
+  "directions": {
+    "N": "up",
+    "NE": "up right",
+    "E": "right",
+    "SE": "down right",
+    "S": "down",
+    "SW": "down left",
+    "W": "left",
+    "NW": "up left"
+  },
+  "placement": {
+    "title": "Place your pieces",
+    "hint": "Tap a piece, then a cell in your half. The arrows rotate the selected piece.",
+    "selected": "Selected piece: {shape}",
+    "nothingSelected": "No piece selected",
+    "shuffle": "Another formation",
+    "confirm": "Confirm placement",
+    "waitingOpponent": "The opponent is setting up…"
+  },
+  "actions": {
+    "move": "Move",
+    "rotateLeft": "Rotate left",
+    "rotateRight": "Rotate right",
+    "pass": "Pass",
+    "shoot": "Shoot",
+    "cancel": "Cancel",
+    "moveTo": "Move to {cell}",
+    "kickToward": "{kick} {direction}"
+  },
+  "markers": {
+    "menuLabel": "Deduction marker on {cell}",
+    "remove": "Remove",
+    "rotate": "Orient",
+    "describe": "{kind} marker on {cell}"
+  },
+  "board": {
+    "label": "Pitch of {length} columns by {width} rows",
+    "ownPiece": "Your {shape}, facing {facing}",
+    "ownPieceWithBall": "Your {shape}, facing {facing}, with the ball",
+    "ballFree": "Loose ball on {cell}",
+    "ballOpponent": "Ball held by the opponent on {cell}"
+  },
+  "hud": {
+    "yourTurn": "Your turn",
+    "opponentThinking": "The opponent is thinking…",
+    "actionsLeft": "Actions left",
+    "endTurn": "End turn",
+    "pause": "Pause",
+    "resume": "Resume",
+    "paused": "Match paused",
+    "quit": "Quit",
+    "log": "Log",
+    "closeLog": "Close the log",
+    "timeLeft": "Time left: {seconds} seconds",
+    "noTimer": "No timer",
+    "turn": "Turn {number}",
+    "chooseMove": "Choose a cell",
+    "chooseDirection": "Choose a direction"
+  },
+  "die": {
+    "result": "Die result: {value}"
+  },
+  "match": {
+    "goal": "Goal!",
+    "rotateDevice": "Turn your phone to landscape for a better view."
+  },
+  "log": {
+    "title": "Match log",
+    "empty": "Nothing has happened yet.",
+    "placed": "{team} placed their pieces",
+    "moved": "Your {shape} moves to {cell}",
+    "rotated": "Your {shape} rotates",
+    "blocked": "Your {shape} is blocked at {cell}: a hidden piece is there",
+    "ballPickedUp": "{team} picks up the ball on {cell}",
+    "ballCarried": "{team} carries the ball to {cell}",
+    "tackled": "{team} steals the ball on {cell}",
+    "dieRolled": "{team} rolls the die: {value}",
+    "pass": "{team} passes over {distance} cells",
+    "shoot": "{team} shoots over {distance} cells",
+    "deflect": "The ball is deflected on {cell}",
+    "rebound": "The ball rebounds on {cell}",
+    "edgeBounce": "The ball bounces off the line",
+    "caught": "{team} controls the ball on {cell}",
+    "intercepted": "{team} intercepts the ball on {cell}",
+    "stopped": "The ball stops on {cell}",
+    "goal": "Goal for {team}!",
+    "turnEnded": "{team} ends their turn",
+    "timeout": "Time is up for {team}",
+    "matchEnded": "Full time"
+  },
+  "end": {
+    "victory": "Victory!",
+    "defeat": "Defeat",
+    "draw": "Draw",
+    "duration": "Duration",
+    "turns": "Turns played",
+    "replay": "Play again",
+    "home": "Home"
+  }
+}

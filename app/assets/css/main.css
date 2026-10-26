@@ -1,0 +1,185 @@
+:root {
+  --team-teal: #167d83;
+  --team-teal-light: #3fc1c9;
+  --team-orange: #e88b42;
+  --team-orange-light: #ffb27a;
+  --grass-light: #48b84f;
+  --grass-dark: #3da545;
+  --grass-apron: #2f8f3a;
+  --pitch-line: rgba(255, 255, 255, 0.88);
+  --stand: #1b2433;
+  --stand-edge: #2b3a52;
+  --night: #0b1f24;
+  --night-glow: #12393c;
+  --panel: rgba(9, 28, 33, 0.86);
+  --panel-border: rgba(255, 255, 255, 0.14);
+  --text: #f5f8f2;
+  --text-muted: #b6c7c4;
+  --highlight: #ffd23f;
+  --urgent: #ff8a1f;
+  --focus-ring: #ffd23f;
+  --radius-pill: 999px;
+  --radius-card: 16px;
+  --shadow-pop: 0 6px 0 rgba(0, 0, 0, 0.35), 0 10px 24px rgba(0, 0, 0, 0.35);
+  --font-display: 'Baloo 2', 'Nunito', 'Trebuchet MS', system-ui, sans-serif;
+  --font-body: 'Nunito', 'Segoe UI', system-ui, sans-serif;
+  color-scheme: dark;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#__nuxt {
+  height: 100%;
+  margin: 0;
+}
+
+body {
+  background: radial-gradient(ellipse at 50% 0%, var(--night-glow), var(--night) 70%);
+  color: var(--text);
+  font-family: var(--font-body);
+  -webkit-tap-highlight-color: transparent;
+  overscroll-behavior: none;
+}
+
+button,
+input,
+select {
+  font: inherit;
+  color: inherit;
+}
+
+:focus-visible {
+  outline: 3px solid var(--focus-ring);
+  outline-offset: 2px;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.arcade-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 48px;
+  padding: 0 24px;
+  border: 0;
+  border-radius: var(--radius-pill);
+  background: linear-gradient(180deg, #ffe066, #ffbf1f);
+  color: #2b1a00;
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 1.05rem;
+  letter-spacing: 0.02em;
+  text-decoration: none;
+  box-shadow: var(--shadow-pop);
+  cursor: pointer;
+  transition: transform 0.12s ease, filter 0.12s ease;
+}
+
+.arcade-button:hover:not(:disabled) {
+  filter: brightness(1.08);
+  transform: translateY(-1px);
+}
+
+.arcade-button:active:not(:disabled) {
+  transform: translateY(3px);
+}
+
+.arcade-button:disabled {
+  cursor: not-allowed;
+  filter: grayscale(0.8) brightness(0.7);
+}
+
+.arcade-button--teal {
+  background: linear-gradient(180deg, var(--team-teal-light), var(--team-teal));
+  color: #fff;
+}
+
+.arcade-button--orange {
+  background: linear-gradient(180deg, var(--team-orange-light), var(--team-orange));
+  color: #2b1300;
+}
+
+.arcade-button--ghost {
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--text);
+  box-shadow: inset 0 0 0 2px var(--panel-border);
+}
+
+.icon-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.1);
+  box-shadow: inset 0 0 0 2px var(--panel-border);
+  cursor: pointer;
+}
+
+.icon-button:hover {
+  background: rgba(255, 255, 255, 0.18);
+}
+
+.screen {
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 24px;
+  padding: max(16px, env(safe-area-inset-top)) max(16px, env(safe-area-inset-right))
+    max(16px, env(safe-area-inset-bottom)) max(16px, env(safe-area-inset-left));
+}
+
+.panel {
+  background: var(--panel);
+  border: 1px solid var(--panel-border);
+  border-radius: var(--radius-card);
+  padding: 20px;
+  backdrop-filter: blur(6px);
+}
+
+.title-display {
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  text-shadow: 0 4px 0 rgba(0, 0, 0, 0.35);
+}
+
+html.reduced-motion *,
+html.reduced-motion *::before,
+html.reduced-motion *::after {
+  animation-duration: 0.01ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.01ms !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
