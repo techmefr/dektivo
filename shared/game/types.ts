@@ -41,6 +41,8 @@ export type Rules = {
   kickConeOnly: boolean
   shootTowardGoalOnly: boolean
   tackleEnabled: boolean
+  tackleMinimumRoll: number
+  protectAfterTackle: boolean
   edgeBounce: boolean
   shapeBehavior: Record<Shape, DeflectionBehavior>
 }
@@ -58,6 +60,7 @@ export type Phase = 'placement' | 'playing' | 'finished'
 export type MatchResult = Team | 'draw'
 export type TurnEndReason = 'manual' | 'noActionsLeft' | 'timeout' | 'goal'
 export type KickKind = 'pass' | 'shoot'
+export type RollKind = KickKind | 'tackle'
 
 export type MoveAction = { kind: 'move'; pieceId: string; to: Cell }
 export type RotateAction = { kind: 'rotate'; pieceId: string; side: RotationSide }
@@ -72,7 +75,9 @@ export type EventPayload =
   | { type: 'ballPickedUp'; team: Team; at: Cell }
   | { type: 'ballCarried'; team: Team; from: Cell; to: Cell }
   | { type: 'tackled'; team: Team; at: Cell }
-  | { type: 'dieRolled'; team: Team; kick: KickKind; value: number }
+  | { type: 'tackleFailed'; team: Team; at: Cell }
+  | { type: 'tackleRefused'; team: Team; at: Cell }
+  | { type: 'dieRolled'; team: Team; kick: RollKind; value: number }
   | { type: 'ballKicked'; team: Team; kick: KickKind; from: Cell; direction: Direction; distance: number; path: Cell[] }
   | { type: 'ballDeflected'; at: Cell; behavior: 'deflect' | 'rebound' }
   | { type: 'ballBouncedOffEdge'; at: Cell }
@@ -99,6 +104,7 @@ export type MatchState = {
   kickoffPieces: Piece[]
   placedTeams: Team[]
   ball: Ball
+  tackleProtectedTurn: number | null
   score: Record<Team, number>
   startingTeam: Team
   activeTeam: Team

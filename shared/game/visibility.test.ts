@@ -17,7 +17,7 @@ describe('player view', () => {
   it('shows the public ball position but hides who holds it on the other side', () => {
     const view = buildView(withBallHeldBy(startedMatch(), idOf('orange', 'triangle')), 'teal')
 
-    expect(view.ball).toEqual({ cell: { x: 6, y: 1 }, possession: 'opponent', holderId: null })
+    expect(view.ball).toEqual({ cell: { x: 6, y: 1 }, possession: 'opponent', holderId: null, isProtected: false })
   })
 
   it('keeps moves and rotations private to the team that made them', () => {

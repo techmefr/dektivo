@@ -14,6 +14,7 @@ export const createMatch = (settings: MatchSettings, startingTeam: Team = 'teal'
   kickoffPieces: [],
   placedTeams: [],
   ball: { cell: centerCell(rules), holderId: null },
+  tackleProtectedTurn: null,
   score: { teal: 0, orange: 0 },
   startingTeam,
   activeTeam: startingTeam,

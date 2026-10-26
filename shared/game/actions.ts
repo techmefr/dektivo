@@ -89,7 +89,7 @@ const findPiece = (draft: MatchState, pieceId: string): Piece => {
   return piece
 }
 
-const applyMove = (draft: MatchState, action: MoveAction): void => {
+const applyMove = (draft: MatchState, action: MoveAction, random: RandomSource): void => {
   const mover = findPiece(draft, action.pieceId)
   const line = stepVectorBetween(mover.cell, action.to)
   if (!line) {
@@ -118,7 +118,18 @@ const applyMove = (draft: MatchState, action: MoveAction): void => {
     if (occupant) {
       recordTravel()
       if (draft.rules.tackleEnabled && draft.ball.holderId === occupant.id) {
+        if (draft.tackleProtectedTurn === draft.turnNumber) {
+          recordEvent(draft, 'all', { type: 'tackleRefused', team: mover.team, at: next })
+          return
+        }
+        const value = rollDie(draft.rules.dieFaces, random)
+        recordEvent(draft, 'all', { type: 'dieRolled', team: mover.team, kick: 'tackle', value })
+        if (value < draft.rules.tackleMinimumRoll) {
+          recordEvent(draft, 'all', { type: 'tackleFailed', team: mover.team, at: next })
+          return
+        }
         draft.ball = { cell: { ...mover.cell }, holderId: mover.id }
+        draft.tackleProtectedTurn = draft.rules.protectAfterTackle ? draft.turnNumber + 1 : null
         recordEvent(draft, 'all', { type: 'tackled', team: mover.team, at: next })
         return
       }
@@ -140,6 +151,7 @@ const applyMove = (draft: MatchState, action: MoveAction): void => {
 
 const applyKick = (draft: MatchState, action: KickAction, random: RandomSource): boolean => {
   const kicker = findPiece(draft, action.pieceId)
+  draft.tackleProtectedTurn = null
   const value = rollDie(draft.rules.dieFaces, random)
   const distance = action.kind === 'shoot' ? value + draft.rules.shootBonus : value
   recordEvent(draft, 'all', { type: 'dieRolled', team: kicker.team, kick: action.kind, value })
@@ -196,7 +208,7 @@ export const applyAction = (state: MatchState, team: Team, action: GameAction, r
 
   const draft = cloneState(state)
   if (action.kind === 'move') {
-    applyMove(draft, action)
+    applyMove(draft, action, random)
   }
   if (action.kind === 'rotate') {
     const piece = findPiece(draft, action.pieceId)

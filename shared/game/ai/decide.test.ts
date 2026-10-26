@@ -4,7 +4,7 @@ import { defaultRules, defaultSettings } from '../rules'
 import { createMatch, placeTeam } from '../state'
 import { endTurn } from '../turns'
 import { buildView } from '../visibility'
-import { idOf, orangePlacement, seededRandom, startedMatch, tealPlacement, withBallHeldBy } from '../test-helpers'
+import { idOf, orangePlacement, randomForFace, seededRandom, startedMatch, tealPlacement, withBallHeldBy } from '../test-helpers'
 import { chooseAiAction } from './decide'
 import type { AiLevel } from './decide'
 import { chooseAiPlacement } from './placement'
@@ -58,6 +58,38 @@ describe('ai', () => {
     )
 
     expect(chooseAiAction(buildView(match, 'teal'), 'medium', seededRandom(3))).toMatchObject({ kind: 'shoot' })
+  })
+
+  it('does not run into a carrier protected after a tackle', () => {
+    const facing = withBallHeldBy(
+      {
+        ...startedMatch(),
+        pieces: startedMatch().pieces.map((piece) => {
+          if (piece.id === idOf('orange', 'triangle')) {
+            return { ...piece, cell: { x: 5, y: 1 } }
+          }
+          if (piece.id === idOf('orange', 'square')) {
+            return { ...piece, cell: { x: 8, y: 2 } }
+          }
+          return piece.id === idOf('teal', 'triangle') ? { ...piece, cell: { x: 4, y: 1 } } : piece
+        }),
+      },
+      idOf('orange', 'triangle'),
+    )
+    const tackled = applyAction(
+      facing,
+      'teal',
+      { kind: 'move', pieceId: idOf('teal', 'triangle'), to: { x: 5, y: 1 } },
+      randomForFace(defaultRules, 3),
+    )
+    const orangeTurn = endTurn(tackled, 'teal')
+
+    for (let seed = 1; seed <= 20; seed += 1) {
+      const random = seededRandom(seed)
+      const action = chooseAiAction(buildView(orangeTurn, 'orange'), 'medium', random)
+      const next = action ? applyAction(orangeTurn, 'orange', action, random) : orangeTurn
+      expect(next.events.some((event) => event.payload.type === 'tackleRefused')).toBe(false)
+    }
   })
 
   it('places its three pieces inside its own half', () => {

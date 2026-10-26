@@ -80,7 +80,7 @@ describe('moving', () => {
       startedMatch({}, replaceShape(tealPlacement, 'triangle', { x: 3, y: 1 }), replaceShape(orangePlacement, 'triangle', { x: 5, y: 1 })),
       idOf('orange', 'triangle'),
     )
-    const next = applyAction(match, 'teal', { kind: 'move', pieceId: idOf('teal', 'triangle'), to: { x: 5, y: 1 } }, anyFace)
+    const next = applyAction(match, 'teal', { kind: 'move', pieceId: idOf('teal', 'triangle'), to: { x: 5, y: 1 } }, randomForFace(defaultRules, 2))
 
     expect(next.ball).toEqual({ cell: { x: 4, y: 1 }, holderId: idOf('teal', 'triangle') })
   })
@@ -124,22 +124,54 @@ describe('moving', () => {
     expect(bumped.activeTeam).toBe('orange')
   })
 
+  const facingCarrier = (): MatchState =>
+    withBallHeldBy(
+      relocate(relocate(startedMatch(), idOf('orange', 'triangle'), { x: 5, y: 1 }), idOf('teal', 'triangle'), { x: 4, y: 1 }),
+      idOf('orange', 'triangle'),
+    )
+
+  const tackleCarrier = (state: MatchState, face: number): MatchState =>
+    applyAction(state, 'teal', { kind: 'move', pieceId: idOf('teal', 'triangle'), to: { x: 5, y: 1 } }, randomForFace(defaultRules, face))
+
   it('tackles the ball carrier when moving into its cell', () => {
-    const neighbours = relocate(
-      relocate(startedMatch(), idOf('orange', 'triangle'), { x: 5, y: 1 }),
-      idOf('teal', 'triangle'),
-      { x: 4, y: 1 },
-    )
-    const tackled = applyAction(
-      withBallHeldBy(neighbours, idOf('orange', 'triangle')),
-      'teal',
-      { kind: 'move', pieceId: idOf('teal', 'triangle'), to: { x: 5, y: 1 } },
-      anyFace,
-    )
+    const tackled = tackleCarrier(facingCarrier(), 2)
 
     expect(tackled.ball).toEqual({ cell: { x: 4, y: 1 }, holderId: idOf('teal', 'triangle') })
     expect(tackled.pieces.find((piece) => piece.id === idOf('orange', 'triangle'))?.cell).toEqual({ x: 5, y: 1 })
     expect(lastPayloads(tackled, 1)[0]).toMatchObject({ type: 'tackled', team: 'teal' })
+  })
+
+  it('misses the tackle on a die roll below the minimum', () => {
+    const missed = tackleCarrier(facingCarrier(), 1)
+
+    expect(missed.ball).toEqual({ cell: { x: 5, y: 1 }, holderId: idOf('orange', 'triangle') })
+    expect(missed.pieces.find((piece) => piece.id === idOf('teal', 'triangle'))?.cell).toEqual({ x: 4, y: 1 })
+    expect(lastPayloads(missed, 2)).toMatchObject([
+      { type: 'dieRolled', kick: 'tackle', value: 1 },
+      { type: 'tackleFailed', team: 'teal' },
+    ])
+  })
+
+  it('protects the new carrier from a tackle during the next opponent turn', () => {
+    const tackled = endTurn(tackleCarrier(facingCarrier(), 3), 'teal')
+
+    expect(buildView(tackled, 'orange').ball.isProtected).toBe(true)
+    const refused = applyAction(
+      tackled,
+      'orange',
+      { kind: 'move', pieceId: idOf('orange', 'triangle'), to: { x: 4, y: 1 } },
+      randomForFace(defaultRules, 3),
+    )
+
+    expect(refused.ball.holderId).toBe(idOf('teal', 'triangle'))
+    expect(lastPayloads(refused, 1)[0]).toMatchObject({ type: 'tackleRefused', team: 'orange' })
+    expect(buildView(endTurn(refused, 'orange'), 'teal').ball.isProtected).toBe(false)
+  })
+
+  it('tackles at every roll when the rules ask for no minimum', () => {
+    const state = { ...facingCarrier(), rules: { ...defaultRules, tackleMinimumRoll: 1 } }
+
+    expect(tackleCarrier(state, 1).ball.holderId).toBe(idOf('teal', 'triangle'))
   })
 })
 

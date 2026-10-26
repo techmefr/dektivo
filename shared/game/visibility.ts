@@ -6,6 +6,7 @@ export type BallView = {
   cell: Cell
   possession: BallPossession
   holderId: string | null
+  isProtected: boolean
 }
 
 export type PlayerView = {
@@ -45,6 +46,7 @@ export const buildView = (state: MatchState, team: Team): PlayerView => {
       cell: state.ball.cell,
       possession,
       holderId: possession === 'own' ? state.ball.holderId : null,
+      isProtected: state.tackleProtectedTurn === state.turnNumber,
     },
     score: state.score,
     activeTeam: state.activeTeam,

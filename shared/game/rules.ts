@@ -11,6 +11,8 @@ export const defaultRules: Rules = {
   kickConeOnly: true,
   shootTowardGoalOnly: true,
   tackleEnabled: true,
+  tackleMinimumRoll: 2,
+  protectAfterTackle: true,
   edgeBounce: true,
   shapeBehavior: {
     square: 'catch',

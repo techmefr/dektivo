@@ -10,6 +10,8 @@ import {
   isSameCell,
   manhattanDistance,
   rotationToward,
+  shiftCell,
+  stepVectorBetween,
 } from '../board'
 import type { Cell, Direction, GameAction, KickKind, Piece, RandomSource, Team } from '../types'
 import type { PlayerView } from '../visibility'
@@ -128,17 +130,32 @@ const blockedCellsOf = (view: PlayerView, pieceId: string): Set<string> =>
 const moveDistance = (first: Cell, second: Cell): number =>
   Math.max(Math.abs(first.x - second.x), Math.abs(first.y - second.y))
 
+const crossesCell = (from: Cell, to: Cell, crossed: Cell): boolean => {
+  const line = stepVectorBetween(from, to)
+  let cursor = from
+  for (let step = 0; line && step < line.steps; step += 1) {
+    cursor = shiftCell(cursor, line.vector)
+    if (isSameCell(cursor, crossed)) {
+      return true
+    }
+  }
+  return false
+}
+
 const stepToward = (
   view: PlayerView,
   piece: Piece,
   target: Cell,
   avoidedCells: Set<string>,
   random: RandomSource,
+  uncrossableCell: Cell | null = null,
 ): GameAction | null => {
   const distanceTo = (cell: Cell) => moveDistance(cell, target) * 10 + manhattanDistance(cell, target)
   const currentDistance = distanceTo(piece.cell)
   const candidates = getPieceOptions(view, piece.id).moveTargets.filter(
-    (cell) => isSameCell(cell, target) || !avoidedCells.has(cellKey(cell)),
+    (cell) =>
+      (isSameCell(cell, target) || !avoidedCells.has(cellKey(cell))) &&
+      !(uncrossableCell && crossesCell(piece.cell, cell, uncrossableCell)),
   )
   const closestDistance = Math.min(...candidates.map(distanceTo))
   if (!Number.isFinite(closestDistance) || closestDistance >= currentDistance) {
@@ -194,8 +211,9 @@ const planWithoutBall = (view: PlayerView, profile: AiProfile, avoidedCells: Set
     .filter((piece) => piece !== goalkeeper || isBallNearOwnGoal)
     .sort((first, second) => manhattanDistance(first.cell, view.ball.cell) - manhattanDistance(second.cell, view.ball.cell))
 
+  const protectedBall = view.ball.isProtected ? view.ball.cell : null
   for (const chaser of chasers) {
-    const step = stepToward(view, chaser, view.ball.cell, avoidedCells, random)
+    const step = stepToward(view, chaser, view.ball.cell, avoidedCells, random, protectedBall)
     if (step) {
       return step
     }
