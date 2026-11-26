@@ -52,6 +52,14 @@ These are first-version hypotheses, all adjustable in `shared/game/rules.ts`.
 - At the end of a match, the end screen and the match log offer the full record as JSON: settings, rules, both formations, a per-team summary and every event, hidden ones included.
 - `pnpm simulate` plays AI-vs-AI matches and prints the average turns and goals, the results and per-turn rates (moves, blocked moves, passes, shots, interceptions, tackles won, missed or refused). Options: `--matches 200`, `--teal easy|medium`, `--orange easy|medium`, `--actions 1|2`, `--seed 1` for a reproducible run, and `--rules '{"tackleMinimumRoll":1}'` to try a rule change.
 
+## Stadium atmosphere
+
+The stands contain one animated crowd with bounded individual movements and no overlapping spectators. Reduce motion in Settings to keep them static.
+
+During placement or a match, use **Enable stadium sound** and the volume slider. The generated crowd ambience and goal clamor require no downloaded audio. Sound stops on pause, hidden tabs and leaving the match; a fresh visit requires activation again.
+
+See [the specification and validation](specs/001-stadium-crowd/quickstart.md) for the test scenarios.
+
 ## Not there yet
 
-Crowd animations and sound, an installable PWA, a hard AI with rule balancing, and online play with Supabase are the next lots.
+Animated character sprites, coordinated waves, confetti and decorative smoke, an installable PWA, a hard AI with rule balancing, and online play with Supabase are the next lots.

@@ -5,7 +5,7 @@ const preferences = usePreferencesStore()
 useHead({
   htmlAttrs: {
     lang: locale,
-    class: computed(() => (preferences.reducedMotion ? 'reduced-motion' : '')),
+    class: computed(() => (preferences.reducedMotion ? 'reduced-motion' : 'full-motion')),
   },
 })
 </script>
