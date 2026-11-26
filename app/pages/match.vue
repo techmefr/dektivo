@@ -31,6 +31,8 @@ const goHome = async () => {
   <main class="match-screen">
     <p class="rotate-hint">{{ t('match.rotateDevice') }}</p>
 
+    <StadiumAudio v-if="phase" />
+
     <PlacementStage v-if="phase === 'placement'" />
 
     <template v-else-if="phase">
@@ -87,7 +89,7 @@ const goHome = async () => {
   }
 
   .match-screen__board {
-    width: min(calc(100cqw * 122 / 108), calc(100cqh * 122 / 84));
+    width: min(100cqw, calc(100cqh * 122 / 98));
   }
 }
 

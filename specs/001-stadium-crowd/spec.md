@@ -4,7 +4,7 @@
 
 **Created**: 2026-10-29
 
-**Status**: Draft — exigences vérifiées, à relire avant planification
+**Status**: Implémentation autorisée le 2026-11-26 — voir convergence.md pour les validations
 
 **Input**: Animer le public existant par de légères variations individuelles de taille et de position, sans chevauchement ni second public superposé. Ajouter des bruits de stade. Prévoir pour plus tard un public composé d’images animées avec variantes par tokens, ola, papiers et fumigènes.
 
@@ -108,7 +108,7 @@ Le joueur sensible aux animations peut garder des tribunes statiques sans perdre
 - Le réglage de réduction des animations du jeu reste prioritaire sur la préférence de l’appareil lorsqu’un choix explicite existe.
 - Les sons seront fournis ou produits avec des droits adaptés au projet ; le choix des ressources relève de la planification.
 - La validation porte sur le jeu de la branche `feat/playable-match-vs-ai`. La branche `main` ne contient actuellement que la documentation.
-- Ce document spécifie le besoin. Aucun développement, plan technique ou découpage en tâches n’est inclus dans cette livraison.
+- Ce document spécifie le besoin ; le plan, les tâches et les résultats de réalisation sont suivis dans les documents voisins.
 
 ## Future Evolution — hors du lot actuel
 

@@ -20,13 +20,6 @@ const penaltyHeight = Math.min(pitchHeight, goalHeight + 2 * cellSize)
 <template>
   <svg class="pitch" :viewBox="viewBox" role="img" :aria-label="props.label" preserveAspectRatio="xMidYMid meet">
     <defs>
-      <pattern id="crowd" width="4" height="4" patternUnits="userSpaceOnUse">
-        <rect width="4" height="4" fill="var(--stand)" />
-        <circle cx="1" cy="1" r="0.9" fill="#ef6f6c" />
-        <circle cx="3" cy="3" r="0.9" fill="#f7d06b" />
-        <circle cx="3" cy="1" r="0.7" fill="#7cc6fe" />
-        <circle cx="1" cy="3" r="0.7" fill="#c3f0ca" />
-      </pattern>
       <pattern id="net" width="1.6" height="1.6" patternUnits="userSpaceOnUse">
         <path d="M0 0L1.6 1.6M1.6 0L0 1.6" stroke="rgba(255,255,255,0.55)" stroke-width="0.18" />
       </pattern>
@@ -41,8 +34,9 @@ const penaltyHeight = Math.min(pitchHeight, goalHeight + 2 * cellSize)
       :width="pitchViewBox.width"
       :height="pitchViewBox.height"
       rx="6"
-      fill="url(#crowd)"
+      fill="var(--stand)"
     />
+    <StadiumCrowd />
     <rect x="-10" y="-8" :width="pitchWidth + 20" :height="pitchHeight + 16" rx="2" fill="var(--stand-edge)" />
     <rect x="-8.5" y="-6.5" :width="pitchWidth + 17" :height="pitchHeight + 13" fill="var(--grass-apron)" />
 

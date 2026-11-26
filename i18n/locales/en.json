@@ -146,5 +146,12 @@
     "replay": "Play again",
     "home": "Home",
     "downloadRecord": "Download the full log"
+  },
+  "stadium": {
+    "title": "Stadium atmosphere",
+    "enable": "Enable stadium sound",
+    "disable": "Mute stadium sound",
+    "volume": "Volume",
+    "error": "Sound is unavailable. Retry with the button or continue without sound."
   }
 }

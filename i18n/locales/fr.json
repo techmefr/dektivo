@@ -146,5 +146,12 @@
     "replay": "Rejouer",
     "home": "Accueil",
     "downloadRecord": "Télécharger le journal complet"
+  },
+  "stadium": {
+    "title": "Ambiance du stade",
+    "enable": "Activer le son du stade",
+    "disable": "Couper le son du stade",
+    "volume": "Volume",
+    "error": "Le son est indisponible. Réessayez avec le bouton ou continuez sans son."
   }
 }
